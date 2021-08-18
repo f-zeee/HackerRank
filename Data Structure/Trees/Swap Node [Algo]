@@ -1,0 +1,91 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+#
+# Complete the 'swapNodes' function below.
+#
+# The function is expected to return a 2D_INTEGER_ARRAY.
+# The function accepts following parameters:
+#  1. 2D_INTEGER_ARRAY indexes
+#  2. INTEGER_ARRAY queries
+#
+from collections import deque
+
+#I'll create a node fuction 
+class Node:
+    def __init__(self, val):
+        self.info=val
+        self.right=None
+        self.left=None
+    
+def swapNodes(indexes, queries):
+    # Write your code here
+        
+    #for creating the tree
+    def create (root,indexes):
+        q=deque([root])
+        
+        for a,b in indexes:
+            temp=q.popleft()
+            if a!=-1:
+                temp.left=Node(a)
+                q.append(temp.left)
+            if b!=-1:
+                temp.right=Node(b)
+                q.append(temp.right)
+                
+        return root
+    
+    root=Node(1)   
+    root=create(root,indexes)
+
+    result=[]
+            
+    def swap(root,q,level,l):
+        if root:
+            #to verify you are on the right level
+            if level%q==0:
+                root.right,root.left=root.left,root.right
+            
+            #performing in-order traversal
+            swap(root.left,q,level+1,l)
+            l.append(root.info)
+            swap(root.right, q,level+1,l)
+            
+    for q in queries:
+        l=[] #we have created an empty list to store in-order traversal
+        swap(root,q,1,l)
+        result.append(l)
+            
+    return result
+
+
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    n = int(input().strip())
+
+    indexes = []
+
+    for _ in range(n):
+        indexes.append(list(map(int, input().rstrip().split())))
+
+    queries_count = int(input().strip())
+
+    queries = []
+
+    for _ in range(queries_count):
+        queries_item = int(input().strip())
+        queries.append(queries_item)
+
+    result = swapNodes(indexes, queries)
+
+    fptr.write('\n'.join([' '.join(map(str, x)) for x in result]))
+    fptr.write('\n')
+
+    fptr.close()
